@@ -24,6 +24,7 @@
         "backgroundColor": "#A34FD8"
       },
       "package": "com.devluigiraynel.expendia",
+      "googleServicesFile": "./google-services.json",
       "versionCode": 5
     },
     "extra": {

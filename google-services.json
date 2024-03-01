@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "621290427270",
+    "project_id": "troopay",
+    "storage_bucket": "troopay.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621290427270:android:01129ef80f9d9c49005207",
+        "android_client_info": {
+          "package_name": "com.devluigiraynel.expendia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "621290427270-vh7h8nvgrsvep718hlcbdfb7b5oo4nhk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_RsvTmI9B8LbGOY2koZI1Ft3rTWiF6PY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "621290427270-vh7h8nvgrsvep718hlcbdfb7b5oo4nhk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
