@@ -11,6 +11,7 @@ import Loading from './src/components/Loading'
 import Routes from './src/routes'
 import { AuthContextProvider } from './src/context/AuthContext'
 import { IntroContextProvider } from './src/context/IntroContext'
+import { PushNotificationContextProvider } from './src/context/PushNotificationContext'
 
 export default function App() {
   const [fonstLoaded] = useFonts({
@@ -25,11 +26,13 @@ export default function App() {
     <NativeBaseProvider theme={THEME}>
       <IntroContextProvider>
         <AuthContextProvider>
-          <StatusBar
-            barStyle="light-content"
-            backgroundColor="transparent"
-            translucent
-          />
+          <PushNotificationContextProvider>
+            <StatusBar
+              barStyle="light-content"
+              backgroundColor="transparent"
+              translucent
+            />
+          </PushNotificationContextProvider>
           <Routes />
         </AuthContextProvider>
       </IntroContextProvider>
