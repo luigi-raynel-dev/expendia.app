@@ -32,8 +32,8 @@ export default function App() {
               backgroundColor="transparent"
               translucent
             />
+            <Routes />
           </PushNotificationContextProvider>
-          <Routes />
         </AuthContextProvider>
       </IntroContextProvider>
     </NativeBaseProvider>

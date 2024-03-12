@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, ScrollView, Switch, Text, VStack } from 'native-base'
+import { Box, HStack, ScrollView, Switch, Text, VStack } from 'native-base'
 import BackButton from '../components/BackButton'
 import { useNavigation } from '@react-navigation/native'
 import * as MenuItems from '../components/MenuItems'
@@ -12,7 +12,9 @@ import Me from '../components/Me'
 import TermSheet from '../components/TermSheet'
 import IntroSteps from '../components/IntroSteps'
 import * as packageJson from '../../package.json'
-
+import { usePushNotification } from '../hooks/usePushNotification'
+import * as Clipboard from 'expo-clipboard'
+import { TouchableOpacity } from 'react-native'
 export interface GroupForm {
   title: string
   members: string[]
@@ -21,6 +23,7 @@ export interface GroupForm {
 export default function Configurations() {
   const { navigate } = useNavigation()
   const { user } = useAuth()
+  const { token } = usePushNotification()
   const [openConfirmLogout, setOpenConfirmLogout] = useState(false)
   const [openChangeAvatar, setOpenChangeAvatar] = useState(false)
   const [openPrivacyPolicy, setOpenPrivacyPolicy] = useState(false)
@@ -37,6 +40,17 @@ export default function Configurations() {
             <BackButton onPress={() => navigate('Groups')} />
           </Box>
           <Me onPressOnAvatar={() => setOpenChangeAvatar(true)} />
+          <TouchableOpacity
+            onPress={async () => {
+              await Clipboard.setStringAsync(token || '')
+            }}
+          >
+            <HStack textAlign="center" justifyContent="center">
+              <Text fontSize="xs" color="white">
+                {token || 'sem token'}
+              </Text>
+            </HStack>
+          </TouchableOpacity>
           <MenuItems.GroupItems name="Conta">
             <MenuItems.ListItem
               title="Perfil"
@@ -125,8 +139,17 @@ export default function Configurations() {
             <MenuItems.ListItem
               title="Notificações"
               subTitle="Foque nas notificações mais importantes"
-              left={<Ionicons name="notifications" size={24} color="#999" />}
-              disabled={true}
+              left={
+                <Ionicons
+                  name="notifications"
+                  size={24}
+                  color={token ? 'white' : '#999'}
+                />
+              }
+              disabled={token === undefined}
+              onPress={async () => {
+                await Clipboard.setStringAsync(token || '')
+              }}
             />
           </MenuItems.GroupItems>
           <MenuItems.GroupItems name="Aplicativo">

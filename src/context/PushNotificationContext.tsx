@@ -1,10 +1,10 @@
 import { createContext, ReactNode, useEffect, useState } from 'react'
-import { Alert } from 'react-native'
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useAuth } from '../hooks/useAuth'
 import { api } from '../lib/axios'
+import { Alert } from 'react-native'
+import * as Clipboard from 'expo-clipboard'
 
 export interface PushNotificationContextDataProps {
   token?: string
@@ -38,12 +38,29 @@ export function PushNotificationContextProvider({
       if (finalStatus === 'granted') {
         const responseToken = await Notifications.getDevicePushTokenAsync()
         setToken(responseToken.data)
+        Alert.alert('Token', responseToken.data, [
+          {
+            text: 'Copiar',
+            onPress: async () => {
+              await Clipboard.setStringAsync(token || '')
+            }
+          }
+        ])
+        console.error('token: ' + responseToken.data)
       }
     }
   }
 
   const sendPushToken = async () => {
     try {
+      Alert.alert('Token', token, [
+        {
+          text: 'Copiar',
+          onPress: async () => {
+            await Clipboard.setStringAsync(token || '')
+          }
+        }
+      ])
       const response = await api.post('/pushToken', { token })
       console.log(response.data)
     } catch (error) {
