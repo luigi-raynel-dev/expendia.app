@@ -10,6 +10,8 @@ import EmptyMessage from '../components/EmptyMessage'
 import { useAuth } from '../hooks/useAuth'
 import ConfirmEmail from './ConfirmEmail'
 import { MemberProps } from '../components/MembersList'
+import { usePushNotification } from '../hooks/usePushNotification'
+import OverLoader from '../components/OverLoader'
 
 export type GroupMemberType = {
   createdAt: string
@@ -25,11 +27,13 @@ export interface GroupProps {
 }
 
 export default function Groups() {
+  const { data } = usePushNotification()
   const { navigate } = useNavigation()
   const { user } = useAuth()
   const [groups, setGroups] = useState<GroupProps[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [isOverLoading, setIsOverLoading] = useState(true)
 
   async function getGroups() {
     try {
@@ -66,6 +70,13 @@ export default function Groups() {
     }, [user])
   )
 
+  useFocusEffect(
+    useCallback(() => {
+      setIsOverLoading(false)
+      if (data?.groupId) setIsOverLoading(true)
+    }, [data])
+  )
+
   return !user.confirmedEmail ? (
     <ConfirmEmail />
   ) : (
@@ -77,6 +88,7 @@ export default function Groups() {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
       >
+        <OverLoader isLoading={isOverLoading} />
         <VStack px={4} py={8} pb={20}>
           <VStack space={3}>
             {!isLoading ? (

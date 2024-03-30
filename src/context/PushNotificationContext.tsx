@@ -4,10 +4,21 @@ import * as Device from 'expo-device'
 import { useAuth } from '../hooks/useAuth'
 import { api } from '../lib/axios'
 import { Alert } from 'react-native'
-import * as Clipboard from 'expo-clipboard'
 
+export type DataPushNotification = {
+  notificationTopic?:
+    | 'NEW_GROUP'
+    | 'NEW_EXPENSE'
+    | 'FULLY_PAID'
+    | 'USER_PAID'
+    | 'EXPENSE_EXPIRATION'
+  groupId?: string
+  expenseId?: string
+}
 export interface PushNotificationContextDataProps {
   token?: string
+  setData: (data?: DataPushNotification) => void
+  data?: DataPushNotification
 }
 
 interface PushNotificationProviderProps {
@@ -23,6 +34,7 @@ export function PushNotificationContextProvider({
 }: PushNotificationProviderProps) {
   const { user } = useAuth()
   const [token, setToken] = useState()
+  const [data, setData] = useState<DataPushNotification>()
 
   const getDevicePushToken = async () => {
     if (Device.isDevice) {
@@ -38,29 +50,12 @@ export function PushNotificationContextProvider({
       if (finalStatus === 'granted') {
         const responseToken = await Notifications.getDevicePushTokenAsync()
         setToken(responseToken.data)
-        Alert.alert('Token', responseToken.data, [
-          {
-            text: 'Copiar',
-            onPress: async () => {
-              await Clipboard.setStringAsync(token || '')
-            }
-          }
-        ])
-        console.error('token: ' + responseToken.data)
       }
     }
   }
 
   const sendPushToken = async () => {
     try {
-      Alert.alert('Token', token, [
-        {
-          text: 'Copiar',
-          onPress: async () => {
-            await Clipboard.setStringAsync(token || '')
-          }
-        }
-      ])
       const response = await api.post('/pushToken', { token })
       console.log(response.data)
     } catch (error) {
@@ -76,10 +71,28 @@ export function PushNotificationContextProvider({
     if (token) sendPushToken()
   }, [token])
 
+  useEffect(() => {
+    const subscription = Notifications.addNotificationReceivedListener(
+      notification => {
+        const {
+          request: {
+            content: { data, body }
+          }
+        } = notification
+        Alert.alert('Data', JSON.stringify(data))
+        setData(data)
+      }
+    )
+
+    return () => subscription.remove()
+  }, [])
+
   return (
     <PushNotificationContext.Provider
       value={{
-        token
+        token,
+        data,
+        setData
       }}
     >
       {children}
