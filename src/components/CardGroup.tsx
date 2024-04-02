@@ -9,17 +9,12 @@ import { Pressable } from '@react-native-material/core'
 import { present } from './DateController'
 import CardBox from './CardBox'
 import { ExpenseProps } from '../screens/Expenses'
-import { usePushNotification } from '../hooks/usePushNotification'
-import { useNavigation } from '@react-navigation/native'
-
 interface CardGroupProps {
   group: GroupProps
   handlePress?: (group: GroupProps) => void
 }
 
 export function CardGroup({ group, handlePress }: CardGroupProps) {
-  const { navigate } = useNavigation()
-  const { data, setData } = usePushNotification()
   const { user } = useAuth()
   const [expenses, setExpenses] = useState<ExpenseProps[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -27,33 +22,6 @@ export function CardGroup({ group, handlePress }: CardGroupProps) {
   useEffect(() => {
     getExpenses()
   }, [])
-
-  useEffect(() => {
-    if (
-      data &&
-      data.notificationTopic === 'NEW_GROUP' &&
-      data.groupId === group.id
-    ) {
-      navigate('Expenses', group)
-      setData(undefined)
-    }
-  }, [data])
-
-  useEffect(() => {
-    if (
-      data &&
-      data.notificationTopic &&
-      data.notificationTopic !== 'NEW_GROUP' &&
-      data.groupId === group.id &&
-      data.expenseId
-    ) {
-      const expense = expenses.find(expense => data.expenseId === expense.id)
-      if (expense) {
-        navigate('Expense', { group, expense })
-        setData(undefined)
-      }
-    }
-  }, [expenses, data])
 
   const getExpenses = async () => {
     setIsLoading(true)
