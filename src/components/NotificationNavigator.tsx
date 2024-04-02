@@ -29,13 +29,13 @@ export const NotificationNavigator: React.FC = () => {
           expenseResponse
         ])
 
-        if (group?.data?.id) {
+        if (group?.data?.group) {
           if (data.notificationTopic === 'NEW_GROUP')
-            navigate('Expenses', group.data)
-          else if (expense?.data?.id)
+            navigate('Expenses', group.data.group)
+          else if (expense?.data?.expense)
             navigate('Expense', {
-              group: group.data,
-              expense: expense.data
+              group: group.data.group,
+              expense: expense.data.expense
             })
           else
             Alert.alert(
@@ -53,6 +53,7 @@ export const NotificationNavigator: React.FC = () => {
         'Ops!',
         'Não foi possível obter as informações desta notificação.'
       )
+      console.error('getData', error)
     } finally {
       setLoading(false)
       setData(undefined)
@@ -63,5 +64,5 @@ export const NotificationNavigator: React.FC = () => {
     getData()
   }, [data])
 
-  return isLoading ? <OverLoader /> : <></>
+  return <OverLoader isLoading={isLoading} />
 }
