@@ -46,7 +46,7 @@ export default function ConfirmEmail() {
         )
       } else Alert.alert('Ops!', 'Algo deu errado. Tente novamente mais tarde!')
     } catch (error) {
-      console.log(error)
+      console.error(error)
     } finally {
       setSubmitting(false)
     }
@@ -63,7 +63,7 @@ export default function ConfirmEmail() {
         })
       else Alert.alert('Ops!', 'Algo deu errado. Tente novamente mais tarde!')
     } catch (error) {
-      console.log(error)
+      console.error(error)
       Alert.alert('Ops!', 'Algo deu errado. Tente novamente mais tarde!')
     } finally {
       setIsLoading(false)

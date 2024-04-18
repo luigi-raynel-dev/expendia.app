@@ -10,9 +10,6 @@ import EmptyMessage from '../components/EmptyMessage'
 import { useAuth } from '../hooks/useAuth'
 import ConfirmEmail from './ConfirmEmail'
 import { MemberProps } from '../components/MembersList'
-import { usePushNotification } from '../hooks/usePushNotification'
-import OverLoader from '../components/OverLoader'
-import { NotificationNavigator } from '../components/NotificationNavigator'
 
 export type GroupMemberType = {
   createdAt: string
@@ -80,7 +77,6 @@ export default function Groups() {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
       >
-        <NotificationNavigator />
         <VStack px={4} py={8} pb={20}>
           <VStack space={3}>
             {!isLoading ? (
@@ -89,7 +85,7 @@ export default function Groups() {
                   <Item.CardGroup
                     key={group.id}
                     group={group}
-                    handlePress={item => navigate('Expenses', item)}
+                    handlePress={group => navigate('Expenses', { group })}
                   />
                 ))
               ) : (

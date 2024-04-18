@@ -35,7 +35,7 @@ export default function DeleteGroup({ onClose, isOpen, group }: Props) {
       }
     } catch (error) {
       Alert.alert('Ops!', 'Algo deu errado. Tente novamente mais tarde!')
-      console.log(error)
+      console.error(error)
     } finally {
       if (onClose) onClose(false)
     }

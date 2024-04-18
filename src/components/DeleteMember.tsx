@@ -50,7 +50,7 @@ export default function DeleteMember({
     } catch (error) {
       Alert.alert('Ops!', 'Algo deu errado. Tente novamente mais tarde!')
       if (onClose) onClose(false)
-      console.log(error)
+      console.error(error)
     }
   }
 

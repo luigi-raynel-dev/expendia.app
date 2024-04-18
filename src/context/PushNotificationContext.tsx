@@ -3,7 +3,6 @@ import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
 import { useAuth } from '../hooks/useAuth'
 import { api } from '../lib/axios'
-import { Alert } from 'react-native'
 
 export type DataPushNotification = {
   notificationTopic?:
@@ -17,8 +16,6 @@ export type DataPushNotification = {
 }
 export interface PushNotificationContextDataProps {
   token?: string
-  setData: (data?: DataPushNotification) => void
-  data?: DataPushNotification
 }
 
 interface PushNotificationProviderProps {
@@ -34,7 +31,6 @@ export function PushNotificationContextProvider({
 }: PushNotificationProviderProps) {
   const { user } = useAuth()
   const [token, setToken] = useState()
-  const [data, setData] = useState<DataPushNotification>()
 
   const getDevicePushToken = async () => {
     if (Device.isDevice) {
@@ -56,8 +52,7 @@ export function PushNotificationContextProvider({
 
   const sendPushToken = async () => {
     try {
-      const response = await api.post('/pushToken', { token })
-      console.log(response.data)
+      await api.post('/pushToken', { token })
     } catch (error) {
       console.error('Notification Error: ', error)
     }
@@ -71,30 +66,8 @@ export function PushNotificationContextProvider({
     if (token) sendPushToken()
   }, [token])
 
-  useEffect(() => {
-    const subscription = Notifications.addNotificationReceivedListener(
-      notification => {
-        const {
-          request: {
-            content: { data, body }
-          }
-        } = notification
-        Alert.alert('Data', JSON.stringify(data))
-        setData(data)
-      }
-    )
-
-    return () => subscription.remove()
-  }, [])
-
   return (
-    <PushNotificationContext.Provider
-      value={{
-        token,
-        data,
-        setData
-      }}
-    >
+    <PushNotificationContext.Provider value={{ token }}>
       {children}
     </PushNotificationContext.Provider>
   )

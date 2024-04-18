@@ -61,10 +61,12 @@ export default function ExpensePayers() {
           title: `Despesa ${values.id ? 'editada' : 'criada'} com sucesso!`
         })
         navigate('Expenses', {
-          id: values.group_id,
-          title: values.group_title,
-          Member: [],
-          user_id: user.id || ''
+          group: {
+            id: values.group_id,
+            title: values.group_title,
+            Member: [],
+            user_id: user.id || ''
+          }
         })
       } else {
         Alert.alert(

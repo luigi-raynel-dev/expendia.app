@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useMemo } from 'react'
-import { HStack, ScrollView, Text, VStack } from 'native-base'
+import { HStack, ScrollView, Skeleton, Text, VStack } from 'native-base'
 import {
   useFocusEffect,
   useNavigation,
@@ -28,6 +28,11 @@ import { getExpenseForm } from '../helpers/expenseHelper'
 import EditGroupTitle from '../components/EditGroupTitle'
 import { MemberProps } from '../components/MembersList'
 
+export interface GroupRoute {
+  group?: GroupProps
+  groupId?: string
+}
+
 export interface ExpenseProps {
   id: string
   title: string
@@ -55,7 +60,8 @@ export default function Expenses() {
   const [isLoading, setIsLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const route = useRoute()
-  const [group, setGroup] = useState<GroupProps>(route.params as GroupProps)
+  const { group: groupParam, groupId } = route.params as GroupRoute
+  const [group, setGroup] = useState<GroupProps | undefined>(groupParam)
   const [expenses, setExpenses] = useState<ExpenseProps[]>([])
   const [selecteds, setSelecteds] = useState<string[]>([])
   const [payers, setPayers] = useState<MemberProps[]>([])
@@ -65,7 +71,7 @@ export default function Expenses() {
   const [openDuplicate, setOpenDuplicate] = useState(false)
   const [editGroupTitle, setEditGroupTitle] = useState(false)
   const me = useMemo(
-    () => group.Member.find(groupMember => groupMember.member.id === user.id),
+    () => group?.Member.find(groupMember => groupMember.member.id === user.id),
     [group]
   )
 
@@ -73,14 +79,16 @@ export default function Expenses() {
     try {
       setIsLoading(loading)
       const query = `month=${expensesDate.month + 1}&year=${expensesDate.year}`
-      const response = await api.get(`/groups/${group.id}/expenses?${query}`)
+      const response = await api.get(
+        `/groups/${group?.id || groupId}/expenses?${query}`
+      )
       setExpenses(response.data.expenses || [])
     } catch (error) {
       Alert.alert(
         'Ops!',
-        'Não foi possível buscar as despesas do grupo ' + group.title
+        'Não foi possível buscar as despesas do grupo ' + group?.title || ''
       )
-      console.log(error)
+      console.error(error)
     } finally {
       setIsLoading(false)
     }
@@ -88,7 +96,7 @@ export default function Expenses() {
 
   async function getGroup() {
     try {
-      const response = await api.get(`/groups/${group.id}`)
+      const response = await api.get(`/groups/${groupId || group?.id}`)
       if (response.data.group) setGroup(response.data.group)
       else
         Alert.alert(
@@ -103,6 +111,12 @@ export default function Expenses() {
     }
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      if (groupId) getGroup()
+    }, [groupId])
+  )
+
   const handleRefresh = () => {
     setRefreshing(true)
     getExpenses()
@@ -111,7 +125,7 @@ export default function Expenses() {
 
   useFocusEffect(
     useCallback(() => {
-      getGroup()
+      if (!groupId) getGroup()
       setExpenses([])
       setSelecteds([])
       setPayers([])
@@ -136,7 +150,7 @@ export default function Expenses() {
 
   const editExpense = () => {
     const expense = expenses.find(({ id }) => id === selecteds[0])
-    if (expense) {
+    if (expense && group) {
       navigate('ExpenseName', {
         ...expense,
         cost: Number(expense.cost),
@@ -173,7 +187,7 @@ export default function Expenses() {
 
   return (
     <>
-      {editGroupTitle ? (
+      {editGroupTitle && group ? (
         <EditGroupTitle
           group={group}
           setGroup={setGroup}
@@ -182,7 +196,20 @@ export default function Expenses() {
       ) : (
         <AppBar
           title={
-            !me?.isAdmin && selecteds.length === 0 ? group.title : undefined
+            !me?.isAdmin && selecteds.length === 0 ? (
+              group ? (
+                group.title
+              ) : (
+                <Skeleton
+                  rounded="md"
+                  h={5}
+                  w={48}
+                  startColor="#fff"
+                  endColor="#999"
+                  opacity={0.4}
+                />
+              )
+            ) : undefined
           }
           center={
             selecteds.length > 0 ? (
@@ -194,7 +221,18 @@ export default function Expenses() {
               >
                 <HStack textAlign="center" justifyContent="center">
                   <Text fontSize="lg" color="white">
-                    {group.title}
+                    {group ? (
+                      group.title
+                    ) : (
+                      <Skeleton
+                        rounded="md"
+                        h={5}
+                        w={48}
+                        startColor="#fff"
+                        endColor="#999"
+                        opacity={0.4}
+                      />
+                    )}
                   </Text>
                 </HStack>
               </TouchableOpacity>
@@ -285,17 +323,19 @@ export default function Expenses() {
           </VStack>
         </VStack>
       </ScrollView>
-      <DuplicateExpense
-        expenses={selecteds.map(selectedId => {
-          const expense = expenses.find(({ id }) => id === selectedId)
-          return getExpenseForm(expense!, group)
-        })}
-        isOpen={openDuplicate}
-        onClose={() => {
-          setOpenDuplicate(false)
-          setSelecteds([])
-        }}
-      />
+      {group && (
+        <DuplicateExpense
+          expenses={selecteds.map(selectedId => {
+            const expense = expenses.find(({ id }) => id === selectedId)
+            return getExpenseForm(expense!, group)
+          })}
+          isOpen={openDuplicate}
+          onClose={() => {
+            setOpenDuplicate(false)
+            setSelecteds([])
+          }}
+        />
+      )}
       <DeleteExpense
         expenses={selecteds}
         isOpen={openDelete}
@@ -344,18 +384,20 @@ export default function Expenses() {
       ) : selecteds.length > 0 ? (
         <MarkAsPaidFab onPress={() => setOpenMarkAsPaid(true)} />
       ) : (
-        <PlusFab
-          onPress={() =>
-            navigate('ExpenseName', {
-              group_id: group.id,
-              group_title: group.title,
-              cost: 0,
-              dueDate: '',
-              title: '',
-              payers: []
-            })
-          }
-        />
+        group && (
+          <PlusFab
+            onPress={() =>
+              navigate('ExpenseName', {
+                group_id: group.id,
+                group_title: group.title,
+                cost: 0,
+                dueDate: '',
+                title: '',
+                payers: []
+              })
+            }
+          />
+        )
       )}
     </>
   )

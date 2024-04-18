@@ -50,10 +50,12 @@ export default function GroupMembers() {
         const response = await api.post('/groups', values)
         if (response.data.status && response.data.group_id) {
           navigate('Expenses', {
-            ...values,
-            Member: [],
-            user_id: user.id!,
-            id: response.data.group_id
+            group: {
+              ...values,
+              Member: [],
+              user_id: user.id!,
+              id: response.data.group_id
+            }
           })
         } else {
           Alert.alert('Ops!', 'Algo deu errado. Tente novamente mais tarde!')

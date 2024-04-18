@@ -35,7 +35,7 @@ export function CardGroup({ group, handlePress }: CardGroupProps) {
         'Ops!',
         'Não foi possível buscar as despesas do grupo ' + group.title
       )
-      console.log(error)
+      console.error(error)
     } finally {
       setIsLoading(false)
     }

@@ -99,7 +99,7 @@ export default function MarkAsPaid({
     } catch (error) {
       Alert.alert('Ops!', 'Algo deu errado. Tente novamente mais tarde!')
       if (onClose) onClose()
-      console.log(error)
+      console.error(error)
     }
   }
 

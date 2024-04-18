@@ -2,7 +2,7 @@ export default {
   name: 'Expendia',
   slug: 'expendia',
   scheme: 'expendia',
-  version: '0.1.2',
+  version: '0.2.0',
   orientation: 'portrait',
   icon: './assets/icon.png',
   userInterfaceStyle: 'light',

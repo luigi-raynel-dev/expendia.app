@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native'
+import { LinkingOptions, NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import Home from '../screens/Home'
 import Email from '../screens/Email'
@@ -26,6 +26,27 @@ import Group from '../screens/Group'
 import Profile from '../screens/Profile'
 import RequestAccountDeletion from '../screens/RequestAccountDeletion'
 import DeleteAccount from '../screens/DeleteAccount'
+import { createURL } from 'expo-linking'
+
+const linking: LinkingOptions<ReactNavigation.RootParamList> = {
+  prefixes: [createURL('/')],
+  config: {
+    screens: {
+      Expenses: {
+        path: 'group/:groupId',
+        parse: {
+          groupId: (groupId: string) => groupId
+        }
+      },
+      Expense: {
+        path: 'expense/:expenseId',
+        parse: {
+          expenseId: (expenseId: string) => expenseId
+        }
+      }
+    }
+  }
+}
 
 export default function Routes() {
   const { Navigator, Screen } = createNativeStackNavigator()
@@ -34,7 +55,7 @@ export default function Routes() {
   return isUserLoading ? (
     <Loading />
   ) : (
-    <NavigationContainer>
+    <NavigationContainer linking={linking} fallback={<Loading />}>
       <Navigator
         initialRouteName={user.email ? 'Groups' : 'Home'}
         screenOptions={{

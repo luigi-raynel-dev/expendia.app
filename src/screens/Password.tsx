@@ -54,7 +54,7 @@ export default function Password() {
         }
       } else Alert.alert('Ops!', 'Algo deu errado. Tente novamente mais tarde!')
     } catch (error) {
-      console.log(error)
+      console.error(error)
     } finally {
       setSubmitting(false)
     }
