@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Badge, HStack, ScrollView, Skeleton, Text, VStack } from 'native-base'
+import {
+  Badge,
+  HStack,
+  ScrollView,
+  Skeleton,
+  Text,
+  VStack,
+  useToast
+} from 'native-base'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { api } from '../lib/axios'
 import { Alert, RefreshControl, TouchableOpacity } from 'react-native'
@@ -26,6 +34,9 @@ import EditExpenseTitle from '../components/EditExpenseTitle'
 import { getPercentage } from '../helpers/moneyHelper'
 import OverLoader from '../components/OverLoader'
 import { ExpenseForm } from './ExpenseName'
+import { Link } from 'phosphor-react-native'
+import * as Clipboard from 'expo-clipboard'
+import { createURL } from 'expo-linking'
 
 export interface ExpenseDetails {
   group?: GroupProps
@@ -38,6 +49,7 @@ interface ExpenseStatusMessageSetupPayer extends ExpenseStatusMessageSetup {
 }
 
 export default function Expense() {
+  const toast = useToast()
   const { user } = useAuth()
   const { navigate, goBack, canGoBack } = useNavigation()
   const [isLoading, setIsLoading] = useState(true)
@@ -386,6 +398,27 @@ export default function Expense() {
             onClose={() => setOpenMenu(false)}
             items={[
               ...menuItems,
+              {
+                label: 'Copiar link',
+                icon: <Link color="white" />,
+                onPress: async () => {
+                  try {
+                    await Clipboard.setStringAsync(
+                      createURL(`/expense/${expense.id}`)
+                    )
+                    toast.show({
+                      title: 'Link copiado com sucesso!'
+                    })
+                  } catch (err) {
+                    toast.show({
+                      title: 'Ocorreu um erro ao tentar copiar o link.'
+                    })
+                    console.error(err)
+                  } finally {
+                    setOpenMenu(false)
+                  }
+                }
+              },
               {
                 icon: <Icon color="white" name="pencil" size={20} />,
                 label: 'Editar',
