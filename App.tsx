@@ -12,6 +12,9 @@ import Routes from './src/routes'
 import { AuthContextProvider } from './src/context/AuthContext'
 import { IntroContextProvider } from './src/context/IntroContext'
 import { PushNotificationContextProvider } from './src/context/PushNotificationContext'
+import { addNotificationResponseReceivedListener } from 'expo-notifications'
+import { openURL } from 'expo-linking'
+import { useEffect } from 'react'
 
 export default function App() {
   const [fonstLoaded] = useFonts({
@@ -19,6 +22,18 @@ export default function App() {
     OpenSans_500Medium,
     OpenSans_700Bold
   })
+
+  useEffect(() => {
+    const subscription = addNotificationResponseReceivedListener(response => {
+      const notification = response.notification
+      const data = notification.request.content.data
+      const deepLink = (data.deepLink || '') as string
+
+      if (deepLink) openURL(deepLink)
+    })
+
+    return () => subscription.remove()
+  }, [])
 
   return !fonstLoaded ? (
     <Loading />
