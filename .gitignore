@@ -21,7 +21,3 @@ web-build/
 
 # Google
 google-services.json
-
-# prebuild
-android
-ios

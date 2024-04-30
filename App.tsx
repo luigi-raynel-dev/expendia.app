@@ -1,5 +1,5 @@
 import { NativeBaseProvider } from 'native-base'
-import { StatusBar } from 'react-native'
+import { Alert, StatusBar } from 'react-native'
 import {
   useFonts,
   OpenSans_400Regular,
@@ -12,9 +12,15 @@ import Routes from './src/routes'
 import { AuthContextProvider } from './src/context/AuthContext'
 import { IntroContextProvider } from './src/context/IntroContext'
 import { PushNotificationContextProvider } from './src/context/PushNotificationContext'
-import { addNotificationResponseReceivedListener } from 'expo-notifications'
-import { openURL } from 'expo-linking'
-import { useEffect } from 'react'
+import Notifications from 'expo-notifications'
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false
+  })
+})
 
 export default function App() {
   const [fonstLoaded] = useFonts({
@@ -22,18 +28,6 @@ export default function App() {
     OpenSans_500Medium,
     OpenSans_700Bold
   })
-
-  useEffect(() => {
-    const subscription = addNotificationResponseReceivedListener(response => {
-      const notification = response.notification
-      const data = notification.request.content.data
-      const deepLink = (data.deepLink || '') as string
-
-      if (deepLink) openURL(deepLink)
-    })
-
-    return () => subscription.remove()
-  }, [])
 
   return !fonstLoaded ? (
     <Loading />
