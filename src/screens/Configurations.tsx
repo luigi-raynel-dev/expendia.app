@@ -11,8 +11,7 @@ import Me from '../components/Me'
 import TermSheet from '../components/TermSheet'
 import IntroSteps from '../components/IntroSteps'
 import * as packageJson from '../../package.json'
-import * as Clipboard from 'expo-clipboard'
-import { TouchableOpacity } from 'react-native'
+
 export interface GroupForm {
   title: string
   members: string[]
