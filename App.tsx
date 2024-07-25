@@ -1,5 +1,5 @@
 import { NativeBaseProvider } from 'native-base'
-import { StatusBar } from 'react-native'
+import { StatusBar, Alert } from 'react-native'
 import {
   useFonts,
   OpenSans_400Regular,
@@ -12,9 +12,13 @@ import Routes from './src/routes'
 import { AuthContextProvider } from './src/context/AuthContext'
 import { IntroContextProvider } from './src/context/IntroContext'
 import { PushNotificationContextProvider } from './src/context/PushNotificationContext'
-import { addNotificationResponseReceivedListener } from 'expo-notifications'
+import {
+  addNotificationResponseReceivedListener,
+  addNotificationReceivedListener
+} from 'expo-notifications'
 import { openURL } from 'expo-linking'
 import { useEffect } from 'react'
+import { setStringAsync } from 'expo-clipboard'
 
 export default function App() {
   const [fonstLoaded] = useFonts({
@@ -24,15 +28,59 @@ export default function App() {
   })
 
   useEffect(() => {
-    const subscription = addNotificationResponseReceivedListener(response => {
-      const notification = response.notification
+    const foregroundSubscription = addNotificationResponseReceivedListener(
+      response => {
+        Alert.alert(
+          'addNotificationReceivedListener',
+          JSON.stringify(response),
+          [
+            {
+              text: 'Cancel',
+              style: 'cancel'
+            },
+            {
+              text: 'Copy',
+              onPress: async () =>
+                await setStringAsync(JSON.stringify(response))
+            }
+          ],
+          { cancelable: false }
+        )
+        const notification = response.notification
+        const data = notification.request.content.data
+        const deepLink = (data.deepLink || '') as string
+
+        if (deepLink) openURL(deepLink)
+      }
+    )
+
+    const backgroundSubscription = addNotificationReceivedListener(response => {
+      Alert.alert(
+        'addNotificationReceivedListener',
+        JSON.stringify(response),
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel'
+          },
+          {
+            text: 'Copy',
+            onPress: async () => await setStringAsync(JSON.stringify(response))
+          }
+        ],
+        { cancelable: false }
+      )
+      const notification = response.request.content.data
       const data = notification.request.content.data
       const deepLink = (data.deepLink || '') as string
 
       if (deepLink) openURL(deepLink)
     })
 
-    return () => subscription.remove()
+    return () => {
+      foregroundSubscription.remove()
+      backgroundSubscription.remove()
+    }
   }, [])
 
   return !fonstLoaded ? (
