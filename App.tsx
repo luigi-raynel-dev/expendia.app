@@ -12,15 +12,23 @@ import Routes from './src/routes'
 import { AuthContextProvider } from './src/context/AuthContext'
 import { IntroContextProvider } from './src/context/IntroContext'
 import { PushNotificationContextProvider } from './src/context/PushNotificationContext'
-import {
-  addNotificationResponseReceivedListener,
-  addNotificationReceivedListener
-} from 'expo-notifications'
+import * as Notifications from 'expo-notifications'
 import { openURL } from 'expo-linking'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { setStringAsync } from 'expo-clipboard'
+import { api } from './src/lib/axios'
+import { getNotificationFromFCM } from './src/lib/fcm'
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false
+  })
+})
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState(false)
   const [fonstLoaded] = useFonts({
     OpenSans_400Regular,
     OpenSans_500Medium,
@@ -28,62 +36,32 @@ export default function App() {
   })
 
   useEffect(() => {
-    const foregroundSubscription = addNotificationResponseReceivedListener(
-      response => {
-        Alert.alert(
-          'addNotificationReceivedListener',
-          JSON.stringify(response),
-          [
-            {
-              text: 'Cancel',
-              style: 'cancel'
-            },
-            {
-              text: 'Copy',
-              onPress: async () =>
-                await setStringAsync(JSON.stringify(response))
-            }
-          ],
-          { cancelable: false }
-        )
-        const notification = response.notification
-        const data = notification.request.content.data
-        const deepLink = (data.deepLink || '') as string
+    let isMounted = true
 
-        if (deepLink) openURL(deepLink)
+    Notifications.getLastNotificationResponseAsync().then(async response => {
+      if (!isMounted || !response?.notification) {
+        return
       }
-    )
+      try {
+        setIsLoading(true)
+        const { identifier } = response.notification.request
 
-    const backgroundSubscription = addNotificationReceivedListener(response => {
-      Alert.alert(
-        'addNotificationReceivedListener',
-        JSON.stringify(response),
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel'
-          },
-          {
-            text: 'Copy',
-            onPress: async () => await setStringAsync(JSON.stringify(response))
-          }
-        ],
-        { cancelable: false }
-      )
-      const notification = response.request.content.data
-      const data = notification.request.content.data
-      const deepLink = (data.deepLink || '') as string
+        const notification = await getNotificationFromFCM(identifier)
 
-      if (deepLink) openURL(deepLink)
+        if (notification && notification.url) openURL(notification.url)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsLoading(true)
+      }
     })
 
     return () => {
-      foregroundSubscription.remove()
-      backgroundSubscription.remove()
+      isMounted = false
     }
   }, [])
 
-  return !fonstLoaded ? (
+  return isLoading || !fonstLoaded ? (
     <Loading />
   ) : (
     <NativeBaseProvider theme={THEME}>
