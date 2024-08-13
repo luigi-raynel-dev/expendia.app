@@ -1,5 +1,5 @@
 import { NativeBaseProvider } from 'native-base'
-import { StatusBar, Alert } from 'react-native'
+import { StatusBar } from 'react-native'
 import {
   useFonts,
   OpenSans_400Regular,
@@ -15,8 +15,6 @@ import { PushNotificationContextProvider } from './src/context/PushNotificationC
 import * as Notifications from 'expo-notifications'
 import { openURL } from 'expo-linking'
 import { useEffect, useState } from 'react'
-import { setStringAsync } from 'expo-clipboard'
-import { api } from './src/lib/axios'
 import { getNotificationFromFCM } from './src/lib/fcm'
 
 Notifications.setNotificationHandler({
@@ -52,7 +50,7 @@ export default function App() {
       } catch (error) {
         console.error(error)
       } finally {
-        setIsLoading(true)
+        setIsLoading(false)
       }
     })
 
