@@ -22,7 +22,7 @@ export default {
     },
     package: 'com.devluigiraynel.expendia',
     googleServicesFile: process.env.GOOGLE_SERVICES,
-    versionCode: 5
+    versionCode: 6
   },
   extra: {
     eas: {
