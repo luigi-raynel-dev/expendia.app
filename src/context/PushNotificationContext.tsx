@@ -2,7 +2,10 @@ import { createContext, ReactNode, useEffect, useState } from 'react'
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
 import { useAuth } from '../hooks/useAuth'
+import { openURL } from 'expo-linking'
+
 import { api } from '../lib/axios'
+import { NotificationFromFCMResponse } from '../lib/fcm'
 
 export type DataPushNotification = {
   notificationTopic?:
@@ -65,6 +68,38 @@ export function PushNotificationContextProvider({
   useEffect(() => {
     if (token) sendPushToken()
   }, [token])
+
+  useEffect(() => {
+    let isMounted = true
+
+    const fetchNotification = async () => {
+      const response = await Notifications.getLastNotificationResponseAsync()
+
+      if (!isMounted || !response?.notification) return
+
+      try {
+        const { identifier } = response.notification.request
+
+        const notificationResponse =
+          await api.post<NotificationFromFCMResponse>(
+            'getNotificationFromFCM',
+            { notificationId: identifier }
+          )
+
+        const notification = notificationResponse.data?.notification || null
+
+        if (notification && notification.url) await openURL(notification.url)
+      } catch (error) {
+        console.error('Error:', error)
+      }
+    }
+
+    fetchNotification()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   return (
     <PushNotificationContext.Provider value={{ token }}>

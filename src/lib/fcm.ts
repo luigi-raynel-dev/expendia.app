@@ -1,5 +1,3 @@
-import { api } from './axios'
-
 export type NotificationPayloadType = {
   id: string
   notificationTokenId: string
@@ -15,18 +13,4 @@ export type NotificationPayloadType = {
 
 export type NotificationFromFCMResponse = {
   notification?: NotificationPayloadType
-}
-
-export const getNotificationFromFCM = async (notificationId: string) => {
-  try {
-    const response = await api.post<NotificationFromFCMResponse>(
-      'getNotificationFromFCM',
-      { notificationId }
-    )
-
-    return response.data?.notification || null
-  } catch (error) {
-    console.error(error)
-    return null
-  }
 }
