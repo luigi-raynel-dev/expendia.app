@@ -28,7 +28,7 @@ export default function SignUp() {
       setSubmitting(true)
       navigate('Register', values)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     } finally {
       setSubmitting(false)
     }

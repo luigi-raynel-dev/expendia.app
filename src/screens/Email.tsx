@@ -71,7 +71,7 @@ export default function Email() {
       }
     } catch (error) {
       Alert.alert('Ops!', 'Algo deu errado. Tente novamente mais tarde!')
-      console.log(error)
+      console.error(error)
     } finally {
       setSubmitting(false)
     }

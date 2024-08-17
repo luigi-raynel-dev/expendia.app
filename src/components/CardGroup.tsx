@@ -9,7 +9,6 @@ import { Pressable } from '@react-native-material/core'
 import { present } from './DateController'
 import CardBox from './CardBox'
 import { ExpenseProps } from '../screens/Expenses'
-
 interface CardGroupProps {
   group: GroupProps
   handlePress?: (group: GroupProps) => void
@@ -36,7 +35,7 @@ export function CardGroup({ group, handlePress }: CardGroupProps) {
         'Ops!',
         'Não foi possível buscar as despesas do grupo ' + group.title
       )
-      console.log(error)
+      console.error(error)
     } finally {
       setIsLoading(false)
     }

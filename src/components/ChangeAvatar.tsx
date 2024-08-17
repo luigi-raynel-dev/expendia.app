@@ -107,7 +107,7 @@ export default function ChangeAvatar({ isOpen, onClose }: Props) {
         'Ops!',
         'Ocorreu um erro ao fazer o upload da imagem. Tente novamente mais tarde!'
       )
-      console.log(error)
+      console.error(error)
     } finally {
       handleClose()
     }

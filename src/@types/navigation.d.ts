@@ -10,6 +10,7 @@ import { FormSignUp } from '../screens/SignUp'
 import { Configurations } from '../screens/Configurations'
 import { Logout } from '../screens/Logout'
 import { SignInParams } from '../screens/SignIn'
+import { GroupRoute } from '../screens/Expenses'
 export declare global {
   namespace ReactNavigation {
     interface RootParamList {
@@ -26,7 +27,7 @@ export declare global {
       GroupName: undefined
       GroupMembers: GroupForm
       RecentMembers: HandleMembersProps
-      Expenses: GroupProps
+      Expenses: GroupRoute
       Expense: ExpenseDetails
       ExpenseName: ExpenseForm
       ExpenseCost: ExpenseForm

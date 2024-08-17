@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
-import { Box, ScrollView, Switch, Text, VStack } from 'native-base'
+import { Box, HStack, ScrollView, Switch, Text, VStack } from 'native-base'
 import BackButton from '../components/BackButton'
 import { useNavigation } from '@react-navigation/native'
 import * as MenuItems from '../components/MenuItems'
 import { Feather, Ionicons, MaterialIcons } from '@expo/vector-icons'
-import { MemberAvatar } from '../components/MemberAvatar'
 import { useAuth } from '../hooks/useAuth'
 import ConfirmLogout from '../components/ConfirmLogout'
 import ChangeAvatar from '../components/ChangeAvatar'
@@ -12,7 +11,8 @@ import Me from '../components/Me'
 import TermSheet from '../components/TermSheet'
 import IntroSteps from '../components/IntroSteps'
 import * as packageJson from '../../package.json'
-
+import * as Clipboard from 'expo-clipboard'
+import { TouchableOpacity } from 'react-native'
 export interface GroupForm {
   title: string
   members: string[]
@@ -126,7 +126,7 @@ export default function Configurations() {
               title="Notificações"
               subTitle="Foque nas notificações mais importantes"
               left={<Ionicons name="notifications" size={24} color="#999" />}
-              disabled={true}
+              disabled
             />
           </MenuItems.GroupItems>
           <MenuItems.GroupItems name="Aplicativo">

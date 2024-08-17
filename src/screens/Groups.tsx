@@ -85,7 +85,7 @@ export default function Groups() {
                   <Item.CardGroup
                     key={group.id}
                     group={group}
-                    handlePress={item => navigate('Expenses', item)}
+                    handlePress={group => navigate('Expenses', { group })}
                   />
                 ))
               ) : (

@@ -70,7 +70,7 @@ export default function DuplicateExpense({ isOpen, onClose, expenses }: Props) {
     } catch (error) {
       Alert.alert('Ops!', 'Algo deu errado. Tente novamente mais tarde!')
       if (onClose) onClose(false)
-      console.log(error)
+      console.error(error)
     } finally {
       setSubmitting(false)
     }
@@ -113,7 +113,10 @@ export default function DuplicateExpense({ isOpen, onClose, expenses }: Props) {
                 onPress={() => duplicateToDate('month')}
               >
                 <HStack space={2} alignItems="center">
-                  <Calendar color={THEME.colors.palette.light.purple} size={28} />
+                  <Calendar
+                    color={THEME.colors.palette.light.purple}
+                    size={28}
+                  />
                   <Text color="white" fontSize="lg">
                     Duplicar para o próximo mês
                   </Text>
@@ -127,7 +130,10 @@ export default function DuplicateExpense({ isOpen, onClose, expenses }: Props) {
                 onPress={() => duplicateToDate('year')}
               >
                 <HStack space={2} alignItems="center">
-                  <CalendarPlus color={THEME.colors.palette.light.purple} size={28} />
+                  <CalendarPlus
+                    color={THEME.colors.palette.light.purple}
+                    size={28}
+                  />
                   <Text color="white" fontSize="lg">
                     Duplicar para o próximo ano
                   </Text>

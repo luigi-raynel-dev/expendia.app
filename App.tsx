@@ -11,6 +11,16 @@ import Loading from './src/components/Loading'
 import Routes from './src/routes'
 import { AuthContextProvider } from './src/context/AuthContext'
 import { IntroContextProvider } from './src/context/IntroContext'
+import { PushNotificationContextProvider } from './src/context/PushNotificationContext'
+import * as Notifications from 'expo-notifications'
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false
+  })
+})
 
 export default function App() {
   const [fonstLoaded] = useFonts({
@@ -25,12 +35,14 @@ export default function App() {
     <NativeBaseProvider theme={THEME}>
       <IntroContextProvider>
         <AuthContextProvider>
-          <StatusBar
-            barStyle="light-content"
-            backgroundColor="transparent"
-            translucent
-          />
-          <Routes />
+          <PushNotificationContextProvider>
+            <StatusBar
+              barStyle="light-content"
+              backgroundColor="transparent"
+              translucent
+            />
+            <Routes />
+          </PushNotificationContextProvider>
         </AuthContextProvider>
       </IntroContextProvider>
     </NativeBaseProvider>

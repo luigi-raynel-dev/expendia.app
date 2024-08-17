@@ -22,7 +22,13 @@ import { useAuth } from '../hooks/useAuth'
 import { api } from '../lib/axios'
 import MembersList, { MemberProps } from '../components/MembersList'
 import PlusFab from '../components/PlusFab'
-import { SignOut, Trash, UserCircleGear, UserGear } from 'phosphor-react-native'
+import {
+  Link,
+  SignOut,
+  Trash,
+  UserCircleGear,
+  UserGear
+} from 'phosphor-react-native'
 import UserLabels from '../components/UserLabels'
 import MenuActionSheet from '../components/MenuActionSheet'
 import DeleteMember from '../components/DeleteMember'
@@ -31,6 +37,8 @@ import EditGroupTitle from '../components/EditGroupTitle'
 import OverLoader from '../components/OverLoader'
 import ConfirmToggleAdmin from '../components/ConfirmToggleAdmin'
 import { MemberOptions } from '../components/MemberSelect'
+import { createURL } from 'expo-linking'
+import * as Clipboard from 'expo-clipboard'
 
 export default function Group() {
   const { user } = useAuth()
@@ -288,6 +296,27 @@ export default function Group() {
         onClose={() => setOpenGroupMenu(false)}
         items={useMemo(() => {
           const actions = [
+            {
+              label: 'Copiar link do grupo',
+              icon: <Link color="white" />,
+              onPress: async () => {
+                try {
+                  await Clipboard.setStringAsync(
+                    createURL(`/group/${group.id}`)
+                  )
+                  toast.show({
+                    title: 'Link copiado com sucesso!'
+                  })
+                } catch (err) {
+                  toast.show({
+                    title: 'Ocorreu um erro ao tentar copiar o link.'
+                  })
+                  console.error(err)
+                } finally {
+                  setOpenGroupMenu(false)
+                }
+              }
+            },
             {
               label: 'Sair do grupo',
               icon: <SignOut color="white" />,
